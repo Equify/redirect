@@ -1,0 +1,63 @@
+replicaCount: 1
+
+image:
+  repository: 512255570375.dkr.ecr.eu-west-3.amazonaws.com/equify-prod
+  pullPolicy: IfNotPresent
+  tag: redirect-1.0.1
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+
+securityContext: {}
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+
+resources:
+  limits:
+    cpu: "1000m"
+    memory: "128Mi"
+  requests:
+    cpu: "100m"
+    memory: "50Mi"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 2
+  targetCPUUtilizationPercentage: 50
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+virtualservice:
+  spec:
+    hosts:
+      - www.equify.fr
+      - equify.fr
+  http:
+    route:
+      destination:
+        host: redirect
+        port: 80
+    retries:
+      attempts: 3
+      perTryTimeout: "10s"
+      retryOn: "connect-failure,refused-stream,503,504"

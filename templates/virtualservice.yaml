@@ -1,0 +1,23 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ include "redirect.fullname" . }}
+  labels:
+    {{- include "redirect.labels" . | nindent 4 }}
+spec:
+  hosts:
+  {{- range .Values.virtualservice.spec.hosts }}
+  - {{ . -}}
+  {{ end }}
+  gateways:
+  - istio-system/default-gw
+  http:
+  - route:
+    - destination:
+        host: {{ .Values.virtualservice.http.route.destination.host }}
+        port:
+          number: {{ .Values.virtualservice.http.route.destination.port }}
+    retries:
+      attempts: {{ .Values.virtualservice.http.retries.attempts }}
+      perTryTimeout: {{ .Values.virtualservice.http.retries.perTryTimeout }}
+      retryOn: {{ .Values.virtualservice.http.retries.retryOn }}
